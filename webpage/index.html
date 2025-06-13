@@ -3,32 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check mCRL2 specification or modal mu calculus formula</title>
+    <title>Parse tree checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        input[readonly] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Send mCRL2 specification or modal mu-calculus formula</h1>
+    <h1>Check mCRL2 specification or modal mu-calculus formula</h1>    <div class="form-group">
+        <label for="textInput">Input:</label>
+        <input type="text" id="textInput" placeholder="Enter your mCRL2 specification or modal mu-calculus formula">
+    </div>
     
-    <div>
-        <input type="text" id="textInput" placeholder="Enter your text here" style="width: 300px; padding: 8px;">
-        <br><br>
-        <button onclick="sendText()" style="padding: 10px 20px;">Send Text</button>
+    <div class="form-group">
+        <label for="resultOutput">Parse Tree Result:</label>
+        <input type="text" id="resultOutput" placeholder="Results will appear here when parsing is successful" readonly>
+    </div>
+    
+    <div class="form-group">
+        <button onclick="sendText()">Check Parse Tree</button>
     </div>
     
     <div id="response" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; display: none;">
         <h3>Server Response:</h3>
         <p id="responseText"></p>
-    </div>
-
-    <script>
+    </div>    <script>
         async function sendText() {
             const text = document.getElementById('textInput').value;
             const responseDiv = document.getElementById('response');
             const responseText = document.getElementById('responseText');
+            const resultOutput = document.getElementById('resultOutput');
             
             if (!text.trim()) {
                 alert('Please enter some text');
                 return;
             }
+            
+            // Clear previous result
+            resultOutput.value = '';
             
             try {
                 const response = await fetch('/api/check_mcrl2', {
@@ -39,12 +99,29 @@
                     body: JSON.stringify({ text: text })
                 });
                 
-                const result = await response.text();
-                responseText.textContent = result;
-                responseDiv.style.display = 'block';
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show result in the read-only field for successful parsing
+                    resultOutput.value = result.result;
+                    responseText.textContent = 'Success! Parse tree generated.';
+                    responseDiv.style.display = 'block';
+                    responseDiv.style.backgroundColor = '#d4edda';
+                    responseDiv.style.borderColor = '#c3e6cb';
+                } else {
+                    // Show error in the response div for failed parsing
+                    resultOutput.value = '';
+                    responseText.textContent = 'Error: ' + result.result;
+                    responseDiv.style.display = 'block';
+                    responseDiv.style.backgroundColor = '#f8d7da';
+                    responseDiv.style.borderColor = '#f5c6cb';
+                }
             } catch (error) {
-                responseText.textContent = 'Error: ' + error.message;
+                resultOutput.value = '';
+                responseText.textContent = 'Network Error: ' + error.message;
                 responseDiv.style.display = 'block';
+                responseDiv.style.backgroundColor = '#f8d7da';
+                responseDiv.style.borderColor = '#f5c6cb';
             }
         }
     </script>
