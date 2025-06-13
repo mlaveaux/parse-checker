@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check mCRL2 specification or modal mu calculus formula</title>
+</head>
+<body>
+    <h1>Send mCRL2 specification or modal mu-calculus formula</h1>
+    
+    <div>
+        <input type="text" id="textInput" placeholder="Enter your text here" style="width: 300px; padding: 8px;">
+        <br><br>
+        <button onclick="sendText()" style="padding: 10px 20px;">Send Text</button>
+    </div>
+    
+    <div id="response" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; display: none;">
+        <h3>Server Response:</h3>
+        <p id="responseText"></p>
+    </div>
+
+    <script>
+        async function sendText() {
+            const text = document.getElementById('textInput').value;
+            const responseDiv = document.getElementById('response');
+            const responseText = document.getElementById('responseText');
+            
+            if (!text.trim()) {
+                alert('Please enter some text');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/check_mcrl2', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                const result = await response.text();
+                responseText.textContent = result;
+                responseDiv.style.display = 'block';
+            } catch (error) {
+                responseText.textContent = 'Error: ' + error.message;
+                responseDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
