@@ -7,7 +7,17 @@ use hyper_util::rt::TokioIo;
 use serde::{Deserialize, Serialize};
 use std::convert::Infallible;
 use std::net::SocketAddr;
+use std::process::ExitCode;
 use tokio::net::TcpListener;
+use duct::cmd;
+
+#[derive(Clone)]
+struct ToolConfig {
+    mcrl22lps: String,
+    lps2pbes: String,
+    mcrl22lps_old: String,
+    lps2pbes_old: String,
+}
 
 #[derive(Parser)]
 #[command(name = "parser")]
@@ -45,7 +55,10 @@ struct CheckResponse {
     success: bool,
 }
 
-async fn handle_request(req: Request<IncomingBody>) -> Result<Response<String>, Infallible> {
+async fn handle_request(
+    req: Request<IncomingBody>,
+    config: ToolConfig,
+) -> Result<Response<String>, Infallible> {
     match (req.method(), req.uri().path()) {
         (&hyper::Method::POST, "/api/check_mcrl2") => {
             // Parse the request body
@@ -69,12 +82,26 @@ async fn handle_request(req: Request<IncomingBody>) -> Result<Response<String>, 
                 }
             };
 
-            // Process the mCRL2 text (placeholder implementation)
-            let result = "test".to_string();
+            // Run mcrl22lps --print-ast with the input text
+            let output = cmd!(config.mcrl22lps, "--print-ast")
+                .stdin_bytes(check_request.text.as_bytes())
+                .stderr_to_stdout()
+                .run();
+
+            let (result, success) = match output {
+                Ok(output) => {
+                    if output.status.success() {
+                        (String::from_utf8_lossy(&output.stdout).to_string(), true)
+                    } else {
+                        (String::from_utf8_lossy(&output.stdout).to_string(), false)
+                    }
+                },
+                Err(e) => (format!("Error running mcrl22lps: {}", e), false),
+            };
             
             let response = CheckResponse {
-                result: result.clone(),
-                success: true,
+                result,
+                success,
             };
 
             let response_json = serde_json::to_string(&response).unwrap();
@@ -117,35 +144,36 @@ async fn handle_request(req: Request<IncomingBody>) -> Result<Response<String>, 
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+async fn main() -> Result<ExitCode, Box<dyn std::error::Error + Send + Sync>> {
     let cli = Cli::parse();
 
     // Check if all provided tool files exist
     let mut missing_tools = Vec::new();
 
     if !cli.mcrl22lps.is_empty() && !std::path::Path::new(&cli.mcrl22lps).exists() {
-        missing_tools.push(format!("mcrl22lps: {}", cli.mcrl22lps));
+        eprintln!("mcrl22lps tool does not exist at: {}", cli.mcrl22lps);
     }
 
     if !cli.lps2pbes.is_empty() && !std::path::Path::new(&cli.lps2pbes).exists() {
-        missing_tools.push(format!("lps2pbes: {}", cli.lps2pbes));
+        eprintln!("lps2pbes tool does not exist at: {}", cli.mcrl22lps);
     }
 
     if !cli.mcrl22lps_old.is_empty() && !std::path::Path::new(&cli.mcrl22lps_old).exists() {
-        missing_tools.push(format!("mcrl22lps-old: {}", cli.mcrl22lps_old));
+        eprintln!("mcrl22lps tool (old) does not exist at: {}", cli.mcrl22lps);
     }
 
     if !cli.lps2pbes_old.is_empty() && !std::path::Path::new(&cli.lps2pbes_old).exists() {
+        eprintln!("lps2pbes tool (old) does not exist at: {}", cli.mcrl22lps);
         missing_tools.push(format!("lps2pbes-old: {}", cli.lps2pbes_old));
     }
 
-    if !missing_tools.is_empty() {
-        eprintln!("Error: The following tool files do not exist:");
-        for tool in missing_tools {
-            eprintln!("  {}", tool);
-        }
-        std::process::exit(1);
-    }
+    // Create tool configuration
+    let config = ToolConfig {
+        mcrl22lps: cli.mcrl22lps.clone(),
+        lps2pbes: cli.lps2pbes.clone(),
+        mcrl22lps_old: cli.mcrl22lps_old.clone(),
+        lps2pbes_old: cli.lps2pbes_old.clone(),
+    };
 
     // Run as HTTP server
     let addr = SocketAddr::from(([127, 0, 0, 1], cli.port));
@@ -155,12 +183,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     loop {
         let (stream, _) = listener.accept().await?;
         let io = TokioIo::new(stream);
+        let config_clone = config.clone();
 
         tokio::task::spawn(async move {
-            if let Err(err) = http1::Builder::new()
-                .serve_connection(io, service_fn(handle_request))
-                .await
-            {
+            let service = service_fn(move |req| handle_request(req, config_clone.clone()));
+            if let Err(err) = http1::Builder::new().serve_connection(io, service).await {
                 eprintln!("Error serving connection: {:?}", err);
             }
         });
