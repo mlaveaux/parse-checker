@@ -1,6 +1,8 @@
 
 use duct::cmd;
 use std::error::Error;
+use std::io::Write;
+use std::io::stdout;
 use console::Style;
 use similar::ChangeTag;
 use similar::TextDiff;
@@ -40,9 +42,8 @@ pub fn print_ast_2024(input: &str, mcf: bool, quantitative: bool) -> Result<Stri
     Ok(String::from_utf8(tool.stdout)?)
 }
 
-fn print_diff(left: &str, right: &str) -> String {
-    let diff = TextDiff::from_chars(left, right);
-    let mut output = String::new();
+fn print_diff(f: &mut impl Write, left: &str, right: &str) -> std::io::Result<()> {
+    let diff = TextDiff::from_words(left, right);
 
     for op in diff.ops() {
         for change in diff.iter_changes(op) {
@@ -51,11 +52,12 @@ fn print_diff(left: &str, right: &str) -> String {
                 ChangeTag::Insert => ("+", Style::new().green()),
                 ChangeTag::Equal => (" ", Style::new()),
             };
-            output.push_str(&format!("{}{}\n", style.apply_to(sign).bold(), style.apply_to(change)));
+
+            write!(f, "{}{}", style.apply_to(sign).bold(), style.apply_to(change))?;
         }
     }
 
-    output
+    Ok(())
 }
 
 /// Compare the ASTs of mCRL2 specifications or modal formulas between two versions.
@@ -64,7 +66,7 @@ pub fn diff_mcrl2(input: &str) -> Result<(), Box<dyn Error>> {
     let previous_ast = print_ast_2024(input, false, false)?;
 
     if current_ast != previous_ast {
-        print_diff(&current_ast,  &previous_ast);
+        print_diff( &mut stdout(), &current_ast,  &previous_ast)?;
 
         Err("The ASTs of the mCRL2 specifications differ between the two versions.")?;
     }
@@ -78,7 +80,7 @@ pub fn diff_mcf(input: &str, quantitative: bool) -> Result<(), Box<dyn Error>> {
     let previous_ast = print_ast_2024(input, true, quantitative)?;
 
     if current_ast != previous_ast {
-        print_diff(&current_ast,  &previous_ast);
+        print_diff(&mut stdout(), &current_ast,  &previous_ast)?;
 
         Err("The ASTs of the modal formula specifications differ between the two versions.")?;
     }

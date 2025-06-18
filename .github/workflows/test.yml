@@ -33,6 +33,13 @@ jobs:
       with:
         submodules: true
 
+    - name: Build tools
+      run: cargo build
+      env:
+        RUST_BACKTRACE: full
+        RUST_LOG: debug
+        RUSTC_WRAPPER: sccache
+
     - name: Run tests
       run: cargo nextest run --no-fail-fast -- --include-ignored
       env:
