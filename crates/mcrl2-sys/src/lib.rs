@@ -17,5 +17,8 @@ pub mod ffi {
 
         /// Prints the input MCF specification as an abstract syntax tree (AST).
         fn print_ast_mcf(input: &str) -> Result<String>;
+        
+        /// Prints the input quantified MCF specification as an abstract syntax tree (AST).
+        fn print_ast_quantitative_mcf(input: &str) -> Result<String>;    
     }
 }

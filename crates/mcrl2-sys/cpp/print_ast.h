@@ -34,3 +34,20 @@ rust::String print_ast_mcf(rust::Str text) {
     result << mcrl2::state_formulas::pp(formspec, false) << std::endl;
     return result.str();
 }
+
+inline
+rust::String print_ast_quantitative_mcf(rust::Str text) {
+    mcrl2::lps::stochastic_specification lpsspec;
+
+    mcrl2::state_formulas::parse_state_formula_options options;
+    options.type_check = false;
+    options.translate_regular_formulas = false;
+    options.translate_user_notation = false;
+    options.resolve_name_clashes = false;
+    options.check_monotonicity = false;
+    mcrl2::state_formulas::state_formula_specification formspec = mcrl2::state_formulas::parse_state_formula_specification(static_cast<std::string>(text), lpsspec, true, options);
+
+    std::stringstream result;
+    result << mcrl2::state_formulas::pp(formspec, false) << std::endl;
+    return result.str();
+}

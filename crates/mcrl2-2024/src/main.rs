@@ -15,14 +15,26 @@ struct Cli {
     /// Whether to check mCRL2 specifications (default) or modal formulas.
     #[arg(short, long)]
     mcf: bool,
+
+    /// Whether to use the quantitative modal formula parser.
+    #[arg(short, long)]
+    quantitative: bool,
 }
 
 fn main() -> Result<ExitCode, Box<dyn Error>> {
     let cli = Cli::parse();
 
     if cli.mcf {
-        print!("{}", mcrl2_2024_sys::ffi::print_ast_mcf(&cli.input)?);
+        if cli.quantitative {
+            print!("{}", mcrl2_2024_sys::ffi::print_ast_quantitative_mcf(&cli.input)?);
+        } else {
+            print!("{}", mcrl2_2024_sys::ffi::print_ast_mcf(&cli.input)?);
+        }
     } else {
+        if cli.quantitative {
+            return Err("Quantitative is only applicable for modal formulas.".into());
+        }
+
         // Default to checking mCRL2 specifications
         print!("{}", mcrl2_2024_sys::ffi::print_ast_mcrl2(&cli.input)?);
     }
