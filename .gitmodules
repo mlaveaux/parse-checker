@@ -1,8 +1,8 @@
 [submodule "3rd-party/mCRL2"]
 	path = 3rd-party/mCRL2
 	url = https://github.com/mCRL2org/mCRL2.git
-[submodule "3rd-party/mCRL2-old"]
-	path = 3rd-party/mCRL2-old
+[submodule "3rd-party/mCRL2-2024"]
+	path = 3rd-party/mCRL2-2024
 	url = https://github.com/mlaveaux/mCRL2.git
 [submodule "3rd-party/boost-include-only"]
 	path = 3rd-party/boost-include-only
