@@ -13,21 +13,27 @@ debug = "full"
 [workspace]
 resolver = "2"
 members = [
-    "crates/*",
+    "crates/cli",
+    "crates/mcrl2-sys",
+    "crates/mcrl2-2024",
+    "crates/mcrl2-2024-sys",
 ]
-
 
 [workspace.dependencies]
 clap = { version = "4.5", features = ["derive"] }
-hyper = { version = "1.6", features = ["full"] }
-hyper-util = { version = "0.1", features = ["full"] }
-tokio = { version = "1.45", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-http-body-util = "0.1"
-duct = "1.0"
 
 # Requires to build mCRL2
+cc = "1.2"
 cxx = "1.0"
 cxx-build = { version = "1.0", features = ["parallel"] }
 cargo-emit = "0.2"
+duct = "1.0"
+which = "8.0"
+similar = "2.7"
+console = "0.15"
+
+test-case = "3.3"
+
+# Own crates
+mcrl2-sys = { path = "crates/mcrl2-sys" }
+mcrl2-2024-sys = { path = "crates/mcrl2-2024-sys" }

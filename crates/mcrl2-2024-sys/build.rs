@@ -33,7 +33,6 @@ fn add_compile_flags(build: &mut Build, mcrl2_path: String) {
         .flag("/Zc:inline")
         .flag("/permissive-")
         .flag("/std:c++17")
-        .flag("")
         .define("WIN32", "1")
         .define("WIN32_LEAN_AND_MEAN", "1")
         .define("NOMINMAX", "1")
@@ -125,6 +124,7 @@ fn main() {
     // Additional files needed to compile the bridge, basically to build mCRL2 itself.
     build
         .cpp(true)
+        .warnings(false)
         .define("MCRL2_NO_RECURSIVE_SOUNDNESS_CHECKS", "1") // These checks overflow the stack, and are extremely slow.
         .define("LPS_NO_RECURSIVE_SOUNDNESS_CHECKS", "1")
         .includes(add_prefix(
