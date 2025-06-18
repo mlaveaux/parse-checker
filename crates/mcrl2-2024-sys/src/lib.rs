@@ -13,17 +13,10 @@ pub mod ffi {
 
 
         /// Prints the input mCRL2 specification as an abstract syntax tree (AST).
-        fn print_ast_mcrl2_2024(input: &str) -> Result<String>;
+        fn print_ast_mcrl2(input: &str) -> Result<String>;
 
         /// Prints the input MCF specification as an abstract syntax tree (AST).
-        fn print_ast_mcf_2024(input: &str) -> Result<String>;
+        fn print_ast_mcf(input: &str) -> Result<String>;
+    
     }
-}
-
-pub fn print_ast_mcrl2(input: &str) -> Result<String, cxx::Exception> {
-    ffi::print_ast_mcrl2_2024(input)
-}
-
-pub fn print_ast_mcf(input: &str) -> Result<String, cxx::Exception> {
-    ffi::print_ast_mcf_2024(input)
 }

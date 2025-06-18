@@ -1,0 +1,11 @@
+[package]
+name = "mcrl2-2024"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+mcrl2-2024-sys.workspace = true
+
+cxx.workspace = true
+clap.workspace = true

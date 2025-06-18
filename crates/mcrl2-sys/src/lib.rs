@@ -19,11 +19,3 @@ pub mod ffi {
         fn print_ast_mcf(input: &str) -> Result<String>;
     }
 }
-
-pub fn print_ast_mcrl2(input: &str) -> Result<String, cxx::Exception> {
-    ffi::print_ast_mcrl2(input)
-}
-
-pub fn print_ast_mcf(input: &str) -> Result<String, cxx::Exception> {
-    ffi::print_ast_mcf(input)
-}

@@ -9,7 +9,8 @@
 
 #include <iostream>
 
-rust::String print_ast_mcrl2_2024(rust::Str text) {
+inline
+rust::String print_ast_mcrl2(rust::Str text) {
     mcrl2::process::process_specification spec = mcrl2::process::parse_process_specification(static_cast<std::string>(text));
 
     std::stringstream result;
@@ -17,7 +18,8 @@ rust::String print_ast_mcrl2_2024(rust::Str text) {
     return result.str();
 }
 
-rust::String print_ast_mcf_2024(rust::Str text) {
+inline
+rust::String print_ast_mcf(rust::Str text) {
     mcrl2::lps::stochastic_specification lpsspec;
 
     mcrl2::state_formulas::parse_state_formula_options options;
