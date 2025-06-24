@@ -17,6 +17,7 @@ members = [
     "crates/mcrl2-sys",
     "crates/mcrl2-2024",
     "crates/mcrl2-2024-sys",
+    "crates/xtask",
 ]
 
 [workspace.dependencies]

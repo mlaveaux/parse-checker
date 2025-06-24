@@ -1,5 +1,6 @@
 //! The main command line tool to check for mCRL2 specification and modal formula parsing differences.
 
+#![forbid(unsafe_code)]
 
 use std::fmt::Write;
 use std::fs;
