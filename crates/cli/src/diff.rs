@@ -7,13 +7,36 @@ use console::Style;
 use similar::ChangeTag;
 use similar::TextDiff;
 
+const CRATE_DIR: &'static str = env!("CARGO_MANIFEST_DIR");
+
 /// Prints the AST of an mCRL2 specification or modal formula.
 pub fn print_ast_2024(input: &str, mcf: bool, quantitative: bool) -> Result<String, Box<dyn Error>> {
     if !mcf && quantitative {
         return Err("quantitative is only applicable for modal formulas.".into());
     }
+    
+    let mcrl2_path = which::which("mcrl2-2024")
+        .or_else(|_| {
+            // Try to find the executable in the same directory as the current executable
+            std::env::current_exe()
+                .map_err(|e| which::Error::CannotFindBinaryPath)
+                .and_then(|mut path| {
+                    path.pop(); // Remove the executable name
+                    
+                    // Try removing "deps" directory if it's the last component
+                    if path.file_name().and_then(|s| s.to_str()) == Some("deps") {
+                        path.pop();
+                    }
+                    
+                    path.push("mcrl2-2024");
+                    if path.exists() {
+                        Ok(path)
+                    } else {
+                        Err(which::Error::CannotFindBinaryPath)
+                    }
+                })
+        })?;
 
-    let mcrl2_path = which::which("mcrl2-2024")?;
 
     // Check if the executables exist
     if !mcrl2_path.exists() {
