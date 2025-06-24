@@ -85,7 +85,7 @@ fn print_diff(f: &mut impl Write, left: &str, right: &str) -> std::io::Result<()
 
 /// Compare the ASTs of mCRL2 specifications or modal formulas between two versions.
 pub fn diff_mcrl2(input: &str) -> Result<(), Box<dyn Error>> {
-    let current_ast = mcrl2_sys::ffi::print_ast_mcrl2(input)?;
+    let current_ast = mcrl2_sys::print_ast_mcrl2(input)?;
     let previous_ast = print_ast_2024(input, false, false)?;
 
     if current_ast != previous_ast {
@@ -99,7 +99,7 @@ pub fn diff_mcrl2(input: &str) -> Result<(), Box<dyn Error>> {
 
 /// Compare the ASTs of mCRL2 specifications or modal formulas between two versions.
 pub fn diff_mcf(input: &str, quantitative: bool) -> Result<(), Box<dyn Error>> {
-    let current_ast = mcrl2_sys::ffi::print_ast_mcf(input)?;
+    let current_ast = mcrl2_sys::print_ast_mcf(input)?;
     let previous_ast = print_ast_2024(input, true, quantitative)?;
 
     if current_ast != previous_ast {

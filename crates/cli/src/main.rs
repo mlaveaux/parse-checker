@@ -61,12 +61,12 @@ fn main() -> Result<ExitCode, Box<dyn Error>> {
     if cli.print {
         let ast = if cli.mcf {
             if cli.quantitative {
-                mcrl2_sys::ffi::print_ast_quantitative_mcf(&input)?
+                mcrl2_sys::print_ast_quantitative_mcf(&input)?
             } else {
-                mcrl2_sys::ffi::print_ast_mcf(&input)?
+                mcrl2_sys::print_ast_mcf(&input)?
             }
         } else {
-            mcrl2_sys::ffi::print_ast_mcrl2(&input)?
+            mcrl2_sys::print_ast_mcrl2(&input)?
         };
 
         if cli.indented {
