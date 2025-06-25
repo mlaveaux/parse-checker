@@ -24,12 +24,16 @@ struct Cli {
     input: String,
 
     /// Whether to check mCRL2 specifications (default) or modal formulas.
-    #[arg(short, long)]
+    #[arg(long)]
     mcf: bool,
 
     /// Prints the parse tree of the input file.
-    #[arg(short, long)]
+    #[arg(long)]
     print: bool,
+
+    /// Prints the parse tree of the input file using the 2024 release of mCRL2.
+    #[arg(long)]
+    print_2024: bool,
 
     /// Prints the parse tree indented (whenever it is printed).
     #[arg(short, long)]
@@ -49,6 +53,7 @@ fn main() -> Result<ExitCode, Box<dyn Error>> {
     }
 
     if let Some(ext) = input_path.extension() {
+        // Detect input format, otherwise use the as specificed by the user.
         if  ext == "mcf" {
             // If the file has a .mcf extension, we assume it's a modal formula. This is also what the toolset does.
             cli.mcf = true;
@@ -59,15 +64,20 @@ fn main() -> Result<ExitCode, Box<dyn Error>> {
 
     let input = fs::read_to_string(input_path)?;
 
-    if cli.print {
-        let ast = if cli.mcf {
-            if cli.quantitative {
-                mcrl2_sys::print_ast_quantitative_mcf(&input)?
+    if cli.print || cli.print_2024 {
+        // If the user wants to print the parse tree, print it depending on the specified options.
+        let ast = if cli.print {
+            if cli.mcf {
+                if cli.quantitative {
+                    mcrl2_sys::print_ast_quantitative_mcf(&input)?
+                } else {
+                    mcrl2_sys::print_ast_mcf(&input)?
+                }
             } else {
-                mcrl2_sys::print_ast_mcf(&input)?
+                mcrl2_sys::print_ast_mcrl2(&input)?
             }
         } else {
-            mcrl2_sys::print_ast_mcrl2(&input)?
+            print_ast_2024(&input, cli.mcf, cli.quantitative)?
         };
 
         if cli.indented {
