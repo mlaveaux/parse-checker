@@ -27,8 +27,9 @@ pub fn print_ast_2024(input: &str, mcf: bool, quantitative: bool) -> Result<Stri
                     if path.file_name().and_then(|s| s.to_str()) == Some("deps") {
                         path.pop();
                     }
-                    
-                    path.push("mcrl2-2024");
+
+                    println!("{:?}", path);
+                    path.push(if cfg!(windows) { "mcrl2-2024.exe" } else { "mcrl2-2024" });
                     if path.exists() {
                         Ok(path)
                     } else {
