@@ -1,0 +1,2 @@
+form ([(true)*](forall i: Nat. val(valid_id(i)))) => ([noncrit(i)](mu X. [!(crit(i))](X)));
+

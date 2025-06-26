@@ -1,0 +1,2 @@
+form nu X. (([true](X)) && (forall b: Bool. [request(b)](mu Y. <true>(Y)))) || (<enter(b)>(true));
+

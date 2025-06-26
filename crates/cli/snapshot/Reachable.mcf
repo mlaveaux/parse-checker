@@ -1,0 +1,2 @@
+form ([(true)*](forall tid: TID. val(valid_tid(tid)))) => ([(noncrit(tid)) . ((!(crit(tid)))*)](<((true)*) . (crit(tid))>(true)));
+
