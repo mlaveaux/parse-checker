@@ -61,22 +61,15 @@ fn main() -> Result<ExitCode, Box<dyn Error>> {
     let input = fs::read_to_string(input_path)?;
 
     if cli.print || cli.print_2024 {
-        // If the user wants to print the parse tree, print it depending on the specified options.
-        let ast = if cli.print {
-            if cli.mcf {
-                mcrl2_sys::print_ast_mcf(&input)?
-            } else {
-                mcrl2_sys::print_ast_mcrl2(&input)?
-            }
-        } else {
-            print_ast_2024(&input, cli.mcf)?
-        };
+        let ast = print(&cli, &input).map_err(|e| format!("Error: {}", e))?;
 
-    if cli.indented {
-        print!("{}", PrintIndented(&ast));
-    } else {
-        print!("{}", ast);
+        if cli.indented {
+            print!("{}", PrintIndented(&ast));
+        } else {
+            print!("{}", ast);
+        }
     }
+
     
     if cli.mcf {
         diff_mcf(&input)?;
@@ -86,6 +79,19 @@ fn main() -> Result<ExitCode, Box<dyn Error>> {
     }
 
     Ok(ExitCode::SUCCESS)
+}
+
+fn print(cli: &Cli, input: &str) -> Result<String, Box<dyn Error>> {    
+    // If the user wants to print the parse tree, print it depending on the specified options.
+    if cli.print {
+        if cli.mcf {
+            Ok(mcrl2_sys::print_ast_mcf(&input)?)
+        } else {
+            Ok(mcrl2_sys::print_ast_mcrl2(&input)?)
+        }
+    } else {
+        print_ast_2024(&input, cli.mcf)
+    }
 }
 
 struct PrintIndented<'a>(&'a str);
