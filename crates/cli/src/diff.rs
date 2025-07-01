@@ -1,5 +1,6 @@
 
 use duct::cmd;
+use similar::utils::TextDiffRemapper;
 use std::error::Error;
 use std::io::Write;
 use std::io::stdout;
@@ -57,18 +58,24 @@ pub fn print_ast_2024(input: &str, mcf: bool) -> Result<String, Box<dyn Error>> 
 }
 
 fn print_diff(f: &mut impl Write, left: &str, right: &str) -> std::io::Result<()> {
-    let diff = TextDiff::from_words(left, right);
+    let diff = TextDiff::configure()
+        .newline_terminated(true)
+        .diff_words(left, right);
+    
+    let remapper = TextDiffRemapper::from_text_diff(&diff, left, right);
+    let changes: Vec<_> = diff.ops()
+        .iter()
+        .flat_map(move |x| remapper.iter_slices(x))
+        .collect();
 
-    for op in diff.ops() {
-        for change in diff.iter_changes(op) {
-            let (sign, style) = match change.tag() {
-                ChangeTag::Delete => ("-", Style::new().red()),
-                ChangeTag::Insert => ("+", Style::new().green()),
-                ChangeTag::Equal => (" ", Style::new()),
-            };
+    for (tag, change) in changes {
+        let (sign, style) = match tag {
+            ChangeTag::Delete => ("-", Style::new().red()),
+            ChangeTag::Insert => ("+", Style::new().green()),
+            ChangeTag::Equal => (" ", Style::new()),
+        };
 
-            write!(f, "{}{}", style.apply_to(sign).bold(), style.apply_to(change))?;
-        }
+        writeln!(f, "{}{}", style.apply_to(sign).bold(), style.apply_to(change))?;
     }
 
     Ok(())
