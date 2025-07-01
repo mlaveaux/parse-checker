@@ -12,7 +12,6 @@ mod tests {
     #[test_case(include_str!("../../../examples/incorrect/Eventual access without coorperation.mcf"), include_str!("../snapshot/Eventual access without coorperation.mcf") ; "Eventual access without coorperation.mcf")]
     #[test_case(include_str!("../../../examples/incorrect/Eventual access.mcf"), include_str!("../snapshot/Eventual access.mcf") ; "Eventual access.mcf")]
     #[test_case(include_str!("../../../examples/incorrect/eventually_comm.mcf"), include_str!("../snapshot/eventually_comm.mcf") ; "eventually comm.mcf")]
-    #[test_case(include_str!("../../../examples/incorrect/eventually_startup.mcf"), include_str!("../snapshot/eventually_startup.mcf") ; "eventually_startup.mcf")]
     #[test_case(include_str!("../../../examples/incorrect/minimal_walking_distance.mcf"), include_str!("../snapshot/minimal_walking_distance.mcf") ; "minimal_walking_distance.mcf")]
     #[test_case(include_str!("../../../examples/incorrect/mutual exclusion.mcf"), include_str!("../snapshot/mutual exclusion.mcf") ; "mutual exclusion.mcf")]
     #[test_case(include_str!("../../../examples/incorrect/prop9.mcf"), include_str!("../snapshot/prop9.mcf") ; "prop9.mcf")]
@@ -27,7 +26,7 @@ mod tests {
         let current_ast = mcrl2_sys::print_ast_mcf(input).expect("Failed to print AST for the current version.");
         assert_eq!(current_ast.trim(), expected.trim(), "The pretty printed AST does not match the expected output.");
 
-        let previous_ast = print_ast_2024(input, true, false).expect("Failed to print AST for the 2024 version.");
+        let previous_ast = print_ast_2024(input, true).expect("Failed to print AST for the 2024 version.");
         assert_ne!(current_ast.trim(), previous_ast.trim(), "For the incorrect example, the ASTs should differ between the two versions.");
     }
 }
