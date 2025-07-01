@@ -1,0 +1,3 @@
+eqn  val(Max)  =  val(2);
+
+form (val((1) / ((Max) * (width)))*nu X(n: Nat = 0). (val((n) == (Max))) && (val(0))) || ((val((n) < (Max))) && ([true](inf d: Int. [walk(d)]((val(d)) + (X((n) + (1)))))));

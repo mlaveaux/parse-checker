@@ -68,6 +68,8 @@ fn main() -> Result<ExitCode, Box<dyn Error>> {
         } else {
             print!("{}", ast);
         }
+
+        return Ok(ExitCode::SUCCESS);
     }
 
     
