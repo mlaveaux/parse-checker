@@ -7,19 +7,13 @@ use console::Style;
 use similar::ChangeTag;
 use similar::TextDiff;
 
-const CRATE_DIR: &'static str = env!("CARGO_MANIFEST_DIR");
-
 /// Prints the AST of an mCRL2 specification or modal formula.
-pub fn print_ast_2024(input: &str, mcf: bool, quantitative: bool) -> Result<String, Box<dyn Error>> {
-    if !mcf && quantitative {
-        return Err("quantitative is only applicable for modal formulas.".into());
-    }
-    
+pub fn print_ast_2024(input: &str, mcf: bool) -> Result<String, Box<dyn Error>> {    
     let mcrl2_path = which::which("mcrl2-2024")
         .or_else(|_| {
             // Try to find the executable in the same directory as the current executable
             std::env::current_exe()
-                .map_err(|e| which::Error::CannotFindBinaryPath)
+                .map_err(|_e| which::Error::CannotFindBinaryPath)
                 .and_then(|mut path| {
                     path.pop(); // Remove the executable name
                     
@@ -53,10 +47,6 @@ pub fn print_ast_2024(input: &str, mcf: bool, quantitative: bool) -> Result<Stri
         arguments.push("--mcf".into());
     }
 
-    if quantitative {
-        arguments.push("--quantitative".into());
-    }
-
     let tool = cmd(mcrl2_path, arguments)
         .stdin_bytes(input)
         .stderr_capture()
@@ -87,7 +77,7 @@ fn print_diff(f: &mut impl Write, left: &str, right: &str) -> std::io::Result<()
 /// Compare the ASTs of mCRL2 specifications or modal formulas between two versions.
 pub fn diff_mcrl2(input: &str) -> Result<(), Box<dyn Error>> {
     let current_ast = mcrl2_sys::print_ast_mcrl2(input)?;
-    let previous_ast = print_ast_2024(input, false, false)?;
+    let previous_ast = print_ast_2024(input, false)?;
 
     if current_ast != previous_ast {
         print_diff( &mut stdout(), &current_ast,  &previous_ast)?;
@@ -99,9 +89,9 @@ pub fn diff_mcrl2(input: &str) -> Result<(), Box<dyn Error>> {
 }
 
 /// Compare the ASTs of mCRL2 specifications or modal formulas between two versions.
-pub fn diff_mcf(input: &str, quantitative: bool) -> Result<(), Box<dyn Error>> {
+pub fn diff_mcf(input: &str) -> Result<(), Box<dyn Error>> {
     let current_ast = mcrl2_sys::print_ast_mcf(input)?;
-    let previous_ast = print_ast_2024(input, true, quantitative)?;
+    let previous_ast = print_ast_2024(input, true)?;
 
     if current_ast != previous_ast {
         print_diff(&mut stdout(), &current_ast,  &previous_ast)?;

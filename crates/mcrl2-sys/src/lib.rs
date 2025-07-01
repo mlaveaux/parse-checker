@@ -20,9 +20,6 @@ mod ffi {
 
         /// Prints the input MCF specification as an abstract syntax tree (AST).
         fn print_ast_mcf(input: &str) -> Result<String>;
-        
-        /// Prints the input quantified MCF specification as an abstract syntax tree (AST).
-        fn print_ast_quantitative_mcf(input: &str) -> Result<String>;    
     }
 }
 
@@ -38,10 +35,4 @@ pub fn print_ast_mcrl2(input: &str) -> Result<String, cxx::Exception> {
 pub fn print_ast_mcf(input: &str) -> Result<String, cxx::Exception> {
     let _guard = MCRL2_LOCK.lock().unwrap();
     ffi::print_ast_mcf(input)
-}
-
-/// Prints the input quantified MCF specification as an abstract syntax tree (AST).
-pub fn print_ast_quantitative_mcf(input: &str) -> Result<String, cxx::Exception> {
-    let _guard = MCRL2_LOCK.lock().unwrap();
-    ffi::print_ast_quantitative_mcf(input)
 }

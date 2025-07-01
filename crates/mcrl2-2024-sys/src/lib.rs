@@ -16,9 +16,8 @@ pub mod ffi {
         fn print_ast_mcrl2(input: &str) -> Result<String>;
 
         /// Prints the input MCF specification as an abstract syntax tree (AST).
+        ///
+        /// Quantitative MCF specifications are parsed exactly the same way, only type checking is different (but irrelevant for printing).
         fn print_ast_mcf(input: &str) -> Result<String>;
-        
-        /// Prints the input quantified MCF specification as an abstract syntax tree (AST).
-        fn print_ast_quantitative_mcf(input: &str) -> Result<String>;    
     }
 }

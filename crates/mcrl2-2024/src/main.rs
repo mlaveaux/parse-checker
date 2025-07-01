@@ -13,10 +13,6 @@ struct Cli {
     /// Whether to check mCRL2 specifications (default) or modal formulas.
     #[arg(short, long, default_value_t = false)]
     mcf: bool,
-
-    /// Whether to use the quantitative modal formula parser.
-    #[arg(short, long, default_value_t = false)]
-    quantitative: bool,
 }
 
 fn main() -> Result<ExitCode, Box<dyn Error>> {
@@ -26,16 +22,8 @@ fn main() -> Result<ExitCode, Box<dyn Error>> {
     io::stdin().read_to_string(&mut input)?;
 
     if cli.mcf {
-        if cli.quantitative {
-            print!("{}", mcrl2_2024_sys::ffi::print_ast_quantitative_mcf(&input)?);
-        } else {
-            print!("{}", mcrl2_2024_sys::ffi::print_ast_mcf(&input)?);
-        }
+        print!("{}", mcrl2_2024_sys::ffi::print_ast_mcf(&input)?);
     } else {
-        if cli.quantitative {
-            return Err("Quantitative is only applicable for modal formulas.".into());
-        }
-
         // Default to checking mCRL2 specifications
         print!("{}", mcrl2_2024_sys::ffi::print_ast_mcrl2(&input)?);
     }
