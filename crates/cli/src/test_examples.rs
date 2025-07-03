@@ -24,9 +24,11 @@ mod tests {
     #[test_case(include_str!("../../../examples/incorrect/white_can_win.mcf"), include_str!("../snapshot/white_can_win.mcf") ; "white_can_win.mcf")]
     fn test_incorrect_example(input: &str, expected: &str) {
         let current_ast = mcrl2_sys::print_ast_mcf(input).expect("Failed to print AST for the current version.");
-        assert_eq!(current_ast.trim(), expected.trim(), "The pretty printed AST does not match the expected output.");
+        let expected_normalized = expected.replace("\r\n", "\n").replace("\r", "\n");
+        assert_eq!(current_ast.trim(), expected_normalized.trim(), "The pretty printed AST does not match the expected output.");
 
         let previous_ast = print_ast_2024(input, true).expect("Failed to print AST for the 2024 version.");
-        assert_ne!(current_ast.trim(), previous_ast.trim(), "For the incorrect example, the ASTs should differ between the two versions.");
+        let previous_ast_normalized = previous_ast.replace("\r\n", "\n").replace("\r", "\n");
+        assert_ne!(current_ast.trim(), previous_ast_normalized.trim(), "For the incorrect example, the ASTs should differ between the two versions.");
     }
 }
