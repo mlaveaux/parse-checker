@@ -31,7 +31,7 @@ cargo-emit = "0.2"
 duct = "1.0"
 which = "8.0"
 similar = "2.7"
-console = "0.15"
+console = "0.16"
 
 test-case = "3.3"
 
