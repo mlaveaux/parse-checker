@@ -7,8 +7,11 @@ use std::error::Error;
 use clap::Parser;
 
 #[derive(Parser)]
-#[command(name = "mcrl2")]
-#[command(about = "A tool that can be used to check whether mCRL2 specifications or modal formulas parse differently between the 2024 and 2025 release.")]
+#[command()]
+#[command(name = "mcrl2-2024",
+    author = "Maurice Laveaux",
+    version,
+    about = "Internal tool used to print the 2024 AST, use parse-checker instead!")]
 struct Cli {
     /// Whether to check mCRL2 specifications (default) or modal formulas.
     #[arg(short, long, default_value_t = false)]

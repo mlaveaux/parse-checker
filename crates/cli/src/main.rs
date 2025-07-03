@@ -17,8 +17,10 @@ mod diff;
 pub use diff::*;
 
 #[derive(Parser)]
-#[command(name = "parse-checker")]
-#[command(about = "A tool that can be used to check whether mCRL2 specifications or modal formulas parse differently between the 202407.0 and 202507.0 release.")]
+#[command(version, 
+    name = "parse-checker",
+    author = "Maurice Laveaux",
+    about = "A tool that can be used to check whether mCRL2 specifications or modal formulas parse differently between the 202407.1 and 202507.0 release.")]
 struct Cli {
     /// The path for the file to check, 
     input: String,

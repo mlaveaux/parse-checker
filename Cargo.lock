@@ -307,7 +307,7 @@ checksum = "cd945864f07fe9f5371a27ad7b52a172b4b499999f1d97574c9fa68373937e12"
 
 [[package]]
 name = "mcrl2-2024"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "clap",
  "cxx",
@@ -316,7 +316,7 @@ dependencies = [
 
 [[package]]
 name = "mcrl2-2024-sys"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "cargo-emit",
  "cc",
@@ -326,7 +326,7 @@ dependencies = [
 
 [[package]]
 name = "mcrl2-sys"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "cargo-emit",
  "cc",
@@ -766,7 +766,7 @@ dependencies = [
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "duct",
 ]
