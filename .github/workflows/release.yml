@@ -52,16 +52,9 @@ jobs:
       env:        
         RUSTC_WRAPPER: sccache
 
-    - name: Zip package directory
-      run: |
-        if [ -d "package" ]; then
-          zip -r package.zip package/
-        fi
-      shell: bash
-
     - name: Upload package artifact
       uses: actions/upload-artifact@v4
       with:
         name: package-${{ matrix.os }}
-        path: package.zip
+        path: package
         if-no-files-found: warn
